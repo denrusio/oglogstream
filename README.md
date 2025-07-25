@@ -18,7 +18,7 @@
 - [API Documentation](#-api-documentation)
 - [Configuration](#-configuration)
 - [Deployment](#-deployment)
-- [Monitoring & Observability](#-monitoring-observability)
+- [Monitoring & Observability](#-monitoring--observability)
 - [Performance](#-performance)
 - [Security](#-security)
 - [Troubleshooting](#-troubleshooting)
