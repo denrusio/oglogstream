@@ -11,7 +11,7 @@
 
 ## 📋 Table of Contents
 
-- [Overview](#overview)
+- [Overview](#-overview)
 - [Architecture](#architecture)
 - [Features](#features)
 - [Quick Start](#quick-start)
