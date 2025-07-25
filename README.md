@@ -159,7 +159,7 @@ sequenceDiagram
 ### Development Environment
 ```bash
 # Clone repository
-git clone <repository-url>
+git clone https://github.com/denrusio/oglogstream
 cd golog
 
 # Start development environment (single instances)
@@ -346,7 +346,7 @@ docker compose -f docker-compose.prod.yml up --scale query-api=5 -d
 #### Deployment Steps
 ```bash
 # 1. Clone and configure
-git clone <repository-url>
+git clone https://github.com/denrusio/oglogstream
 cd golog
 
 # 2. Configure environment
