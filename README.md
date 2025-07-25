@@ -49,63 +49,66 @@ OgLogStream is a enterprise-grade log collection and analytics platform designed
 
 ### System Overview
 ```mermaid
-graph TB
-    Client[Clients/Applications] --> LB[HAProxy Load Balancer]
-    LB --> IA1[Ingestion API 1]
-    LB --> IA2[Ingestion API 2] 
-    LB --> IA3[Ingestion API 3]
+graph TD
+    A[Client Applications] --> B[HAProxy Load Balancer]
     
-    IA1 --> NATS[NATS Message Broker]
-    IA2 --> NATS
-    IA3 --> NATS
+    B --> C1[Ingestion API 1]
+    B --> C2[Ingestion API 2]
+    B --> C3[Ingestion API 3]
     
-    NATS --> |Queue Group| PS1[Processing Service 1]
-    NATS --> |Queue Group| PS2[Processing Service 2]
-    NATS --> |Queue Group| PS3[Processing Service 3]
+    C1 --> D[NATS Message Broker]
+    C2 --> D
+    C3 --> D
     
-    PS1 --> |Batch Insert| CH[ClickHouse Database]
-    PS2 --> |Batch Insert| CH
-    PS3 --> |Batch Insert| CH
+    D --> E1[Processing Service 1]
+    D --> E2[Processing Service 2] 
+    D --> E3[Processing Service 3]
     
-    LB --> QA1[Query API 1]
-    LB --> QA2[Query API 2]
-    LB --> QA3[Query API 3]
+    E1 --> F[ClickHouse Database]
+    E2 --> F
+    E3 --> F
     
-    QA1 --> CH
-    QA2 --> CH
-    QA3 --> CH
+    B --> G1[Query API 1]
+    B --> G2[Query API 2]
+    B --> G3[Query API 3]
     
-    LB --> FE[Frontend (Nginx)]
-    QA1 --> |WebSocket| FE
-    QA2 --> |WebSocket| FE
-    QA3 --> |WebSocket| FE
+    G1 --> F
+    G2 --> F
+    G3 --> F
+    
+    B --> H[OgLogStream Frontend]
+    G1 --> H
+    G2 --> H
+    G3 --> H
 ```
 
 ### Data Flow
 ```mermaid
 sequenceDiagram
-    participant C as Client
-    participant H as HAProxy
-    participant I as Ingestion API
-    participant N as NATS
-    participant P as Processing Service
-    participant D as ClickHouse
-    participant Q as Query API
-    participant F as Frontend
+    participant Client
+    participant HAProxy
+    participant IngestionAPI
+    participant NATS
+    participant ProcessingService
+    participant ClickHouse
+    participant QueryAPI
+    participant Frontend
     
-    C->>H: POST /log (JSON)
-    H->>I: Route to available instance
-    I->>I: Validate & normalize
-    I->>N: Publish to logs.raw
-    N->>P: Queue group balancing
-    P->>P: Batch accumulation (100 records)
-    P->>D: Batch INSERT with retry
+    Client->>HAProxy: POST /log
+    HAProxy->>IngestionAPI: Route to instance
+    IngestionAPI->>IngestionAPI: Validate data
+    IngestionAPI->>NATS: Publish message
+    IngestionAPI->>Client: HTTP 202 Accepted
     
-    F->>H: GET /api/logs
-    H->>Q: Route to available instance
-    Q->>D: SELECT query
-    D->>Q: Result set
-    Q->>F: JSON response
+    NATS->>ProcessingService: Queue group delivery
+    ProcessingService->>ProcessingService: Batch accumulation
+    ProcessingService->>ClickHouse: Batch INSERT
+    
+    Frontend->>HAProxy: GET /api/logs
+    HAProxy->>QueryAPI: Route to instance
+    QueryAPI->>ClickHouse: SELECT query
+    ClickHouse->>QueryAPI: Results
+    QueryAPI->>Frontend: JSON response
 ```
 
 ### Microservices Architecture
