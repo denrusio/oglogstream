@@ -1,0 +1,236 @@
+# OgLogStream .gitignore
+
+# =============================================================================
+# Environment & Configuration
+# =============================================================================
+.env
+.env.local
+.env.production
+.env.development
+*.env
+
+# =============================================================================
+# Go specific
+# =============================================================================
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# Dependency directories
+vendor/
+
+# Go workspace file
+go.work
+
+# =============================================================================
+# Node.js & Frontend
+# =============================================================================
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build outputs
+dist/
+build/
+.tmp/
+
+# Cache directories
+.cache/
+.parcel-cache/
+
+# Environment files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# =============================================================================
+# Docker
+# =============================================================================
+# Docker volumes
+clickhouse_data/
+docker-volumes/
+
+# Docker build cache
+.dockerignore
+
+# =============================================================================
+# IDE & Editors
+# =============================================================================
+# Visual Studio Code
+.vscode/
+*.code-workspace
+
+# JetBrains IDEs
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# =============================================================================
+# Operating System
+# =============================================================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+
+# =============================================================================
+# Logs & Runtime
+# =============================================================================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# =============================================================================
+# Temporary & Cache
+# =============================================================================
+tmp/
+temp/
+.tmp/
+*.tmp
+*.temp
+
+# Cache directories
+.cache/
+.npm/
+.yarn/
+
+# =============================================================================
+# Testing & Coverage
+# =============================================================================
+coverage/
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Go coverage
+coverage.txt
+coverage.html
+coverage.out
+
+# =============================================================================
+# Backup & Archive
+# =============================================================================
+*.bak
+*.backup
+*.old
+*.orig
+*.rej
+*.tar
+*.tar.gz
+*.zip
+*.rar
+
+# =============================================================================
+# Development & Debugging
+# =============================================================================
+# Profiling data
+*.prof
+*.pprof
+
+# Debug files
+debug/
+*.debug
+
+# =============================================================================
+# Production & Deployment
+# =============================================================================
+# Production secrets
+secrets/
+*.key
+*.pem
+*.crt
+*.cert
+
+# Kubernetes secrets
+k8s/secrets/
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+
+# =============================================================================
+# Monitoring & Metrics
+# =============================================================================
+# Prometheus data
+prometheus-data/
+
+# Grafana data
+grafana-data/
+
+# =============================================================================
+# Documentation Build
+# =============================================================================
+# Generated documentation
+docs/_build/
+docs/site/
+
+# =============================================================================
+# Custom OgLogStream
+# =============================================================================
+# Local development overrides
+docker-compose.override.yml
+docker-compose.local.yml
+
+# Test data
+test-data/
+sample-logs/
+
+# Performance benchmarks
+benchmark-results/
+*.bench
+
+# Local configuration
+config.local.json
+settings.local.yaml 

@@ -1,0 +1,148 @@
+services:
+  # Infrastructure services
+  nats:
+    image: nats:latest
+    restart: unless-stopped
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    restart: unless-stopped
+    volumes:
+      - ./clickhouse-init.sql:/docker-entrypoint-initdb.d/clickhouse-init.sql:ro
+      - clickhouse_data:/var/lib/clickhouse
+    environment:
+      - CLICKHOUSE_USER=default
+      - CLICKHOUSE_PASSWORD=
+      - CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1
+
+  # Load balancer
+  haproxy:
+    image: haproxy:2.8-alpine
+    ports:
+      - "80:80"
+      - "8404:8404"  # HAProxy stats
+    volumes:
+      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    depends_on:
+      - ingestion-api-1
+      - ingestion-api-2
+      - ingestion-api-3
+      - query-api-1
+      - query-api-2
+      - query-api-3
+      - frontend
+    restart: unless-stopped
+
+  # Ingestion API instances (3 replicas)
+  ingestion-api-1:
+    build:
+      context: .
+      dockerfile: services/ingestion-api/Dockerfile
+    depends_on:
+      - nats
+    environment:
+      - NATS_URL=nats://nats:4222
+    restart: unless-stopped
+
+  ingestion-api-2:
+    build:
+      context: .
+      dockerfile: services/ingestion-api/Dockerfile
+    depends_on:
+      - nats
+    environment:
+      - NATS_URL=nats://nats:4222
+    restart: unless-stopped
+
+  ingestion-api-3:
+    build:
+      context: .
+      dockerfile: services/ingestion-api/Dockerfile
+    depends_on:
+      - nats
+    environment:
+      - NATS_URL=nats://nats:4222
+    restart: unless-stopped
+
+  # Processing Service instances (3 replicas)
+  processing-svc-1:
+    build:
+      context: .
+      dockerfile: services/processing-svc/Dockerfile
+    depends_on:
+      - nats
+      - clickhouse
+    environment:
+      - NATS_URL=nats://nats:4222
+      - CLICKHOUSE_DSN=clickhouse://default:@clickhouse:9000/default
+    restart: unless-stopped
+
+  processing-svc-2:
+    build:
+      context: .
+      dockerfile: services/processing-svc/Dockerfile
+    depends_on:
+      - nats
+      - clickhouse
+    environment:
+      - NATS_URL=nats://nats:4222
+      - CLICKHOUSE_DSN=clickhouse://default:@clickhouse:9000/default
+    restart: unless-stopped
+
+  processing-svc-3:
+    build:
+      context: .
+      dockerfile: services/processing-svc/Dockerfile
+    depends_on:
+      - nats
+      - clickhouse
+    environment:
+      - NATS_URL=nats://nats:4222
+      - CLICKHOUSE_DSN=clickhouse://default:@clickhouse:9000/default
+    restart: unless-stopped
+
+  # Query API instances (3 replicas)
+  query-api-1:
+    build:
+      context: .
+      dockerfile: services/query-api/Dockerfile
+    depends_on:
+      - clickhouse
+    environment:
+      - CLICKHOUSE_DSN=clickhouse://default:@clickhouse:9000/default
+      - NATS_URL=nats://nats:4222
+    restart: unless-stopped
+
+  query-api-2:
+    build:
+      context: .
+      dockerfile: services/query-api/Dockerfile
+    depends_on:
+      - clickhouse
+    environment:
+      - CLICKHOUSE_DSN=clickhouse://default:@clickhouse:9000/default
+      - NATS_URL=nats://nats:4222
+    restart: unless-stopped
+
+  query-api-3:
+    build:
+      context: .
+      dockerfile: services/query-api/Dockerfile
+    depends_on:
+      - clickhouse
+    environment:
+      - CLICKHOUSE_DSN=clickhouse://default:@clickhouse:9000/default
+      - NATS_URL=nats://nats:4222
+    restart: unless-stopped
+
+  # Frontend instance
+  frontend:
+    build:
+      context: frontend
+      dockerfile: Dockerfile.prod
+    ports:
+      - "3000:80"
+    restart: unless-stopped
+
+volumes:
+  clickhouse_data: 
