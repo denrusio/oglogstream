@@ -124,22 +124,22 @@ sequenceDiagram
 ## ✨ Features
 
 ### Core Capabilities
-- ✅ **High-Throughput Ingestion**: 10,000+ logs/second per instance
-- ✅ **Real-Time Processing**: Sub-second log processing with batching
-- ✅ **Horizontal Scalability**: Auto-scaling microservices
-- ✅ **Load Balancing**: HAProxy with health checks and failover
-- ✅ **Batch Processing**: Optimized ClickHouse insertions (100 records/batch)
-- ✅ **Real-Time Dashboard**: Live log streaming via WebSockets
-- ✅ **Advanced Filtering**: Multi-dimensional log filtering and search
+- **High-Throughput Ingestion**: 10,000+ logs/second per instance
+- **Real-Time Processing**: Sub-second log processing with batching
+- **Horizontal Scalability**: Auto-scaling microservices
+- **Load Balancing**: HAProxy with health checks and failover
+- **Batch Processing**: Optimized ClickHouse insertions (100 records/batch)
+- **Real-Time Dashboard**: Live log streaming via WebSockets
+- **Advanced Filtering**: Multi-dimensional log filtering and search
 
 ### Enterprise Features
-- ✅ **Input Validation**: Strict schema enforcement and sanitization
-- ✅ **Connection Pooling**: Optimized database connections
-- ✅ **Graceful Shutdown**: Zero-downtime deployments
-- ✅ **Retry Logic**: Exponential backoff for fault tolerance
-- ✅ **Health Monitoring**: Comprehensive health checks
-- ✅ **Request Rate Limiting**: DoS protection and resource management
-- ✅ **CORS Support**: Secure cross-origin resource sharing
+- **Input Validation**: Strict schema enforcement and sanitization
+- **Connection Pooling**: Optimized database connections
+- **Graceful Shutdown**: Zero-downtime deployments
+- **Retry Logic**: Exponential backoff for fault tolerance
+- **Health Monitoring**: Comprehensive health checks
+- **Request Rate Limiting**: DoS protection and resource management
+- **CORS Support**: Secure cross-origin resource sharing
 
 ### Data Processing
 - **Supported Log Levels**: `debug`, `info`, `warn`, `error`, `fatal`
