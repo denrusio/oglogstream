@@ -4,7 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"os/signal"
 	"sync"
@@ -12,6 +14,8 @@ import (
 	"time"
 
 	_ "github.com/ClickHouse/clickhouse-go/v2"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/nats-io/nats.go"
 
 	"github.com/yourusername/oglogstream-models"
@@ -182,6 +186,54 @@ func main() {
 	// Initialize batch processor
 	processor := NewBatchProcessor(db, hostname)
 	
+	// Setup HTTP server for health checks
+	r := chi.NewRouter()
+	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
+	
+	// Health check endpoint
+	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
+		status := "ok"
+		httpStatus := http.StatusOK
+		
+		// Check NATS connection
+		if nc.Status() != nats.CONNECTED {
+			status = "degraded"
+			httpStatus = http.StatusServiceUnavailable
+		}
+		
+		// Check ClickHouse connection
+		if err := db.Ping(); err != nil {
+			status = "degraded"
+			httpStatus = http.StatusServiceUnavailable
+		}
+		
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(httpStatus)
+		response := fmt.Sprintf(`{"status":"%s","service":"processing-svc","nats_status":"%s","clickhouse_status":"connected","timestamp":"%s"}`, 
+			status, nc.Status(), time.Now().UTC().Format(time.RFC3339))
+		w.Write([]byte(response))
+	})
+	
+	// Setup HTTP server
+	addr := ":8082"
+	srv := &http.Server{
+		Addr:           addr,
+		Handler:        r,
+		ReadTimeout:    15 * time.Second,
+		WriteTimeout:   15 * time.Second,
+		IdleTimeout:    60 * time.Second,
+		MaxHeaderBytes: 1 << 20, // 1MB
+	}
+	
+	// Start server in goroutine
+	go func() {
+		log.Printf("[%s] Processing service HTTP server listening on %s", hostname, addr)
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("HTTP server error: %v", err)
+		}
+	}()
+	
 	// Setup graceful shutdown
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
@@ -210,6 +262,13 @@ func main() {
 	
 	// Stop batch processor
 	processor.Stop()
+	
+	// Shutdown HTTP server
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	if err := srv.Shutdown(ctx); err != nil {
+		log.Printf("[%s] HTTP server shutdown error: %v", hostname, err)
+	}
 	
 	log.Printf("[%s] Processing service stopped", hostname)
 } 

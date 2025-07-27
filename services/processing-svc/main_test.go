@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	_ "github.com/ClickHouse/clickhouse-go/v2"
-	"github.com/yourusername/logstream-models"
+	"github.com/yourusername/oglogstream-models"
 )
 
 type mockDB struct {

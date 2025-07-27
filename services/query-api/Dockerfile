@@ -8,6 +8,7 @@ COPY services/query-api/ .
 RUN go build -o query-api main.go
 
 FROM alpine:latest
+RUN apk add --no-cache curl
 WORKDIR /root/
 COPY --from=builder /app/query-api .
 EXPOSE 8081

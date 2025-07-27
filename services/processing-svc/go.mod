@@ -4,6 +4,7 @@ go 1.24.5
 
 require (
 	github.com/ClickHouse/clickhouse-go/v2 v2.39.0
+	github.com/go-chi/chi/v5 v5.0.12
 	github.com/nats-io/nats.go v1.43.0
 	github.com/yourusername/oglogstream-models v0.0.0
 )

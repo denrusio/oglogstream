@@ -8,6 +8,7 @@ COPY services/ingestion-api/ .
 RUN go build -o ingestion-api main.go
 
 FROM alpine:latest
+RUN apk add --no-cache curl
 WORKDIR /root/
 COPY --from=builder /app/ingestion-api .
 EXPOSE 8080

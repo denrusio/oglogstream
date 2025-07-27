@@ -8,6 +8,8 @@ COPY services/processing-svc/ .
 RUN go build -o processing-svc main.go
 
 FROM alpine:latest
+RUN apk add --no-cache curl
 WORKDIR /root/
 COPY --from=builder /app/processing-svc .
+EXPOSE 8082
 CMD ["./processing-svc"] 

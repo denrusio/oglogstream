@@ -14,6 +14,12 @@ services:
       - CLICKHOUSE_USER=default
       - CLICKHOUSE_PASSWORD=
       - CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8123/ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
 
   # Load balancer
   haproxy:
@@ -43,6 +49,11 @@ services:
     environment:
       - NATS_URL=nats://nats:4222
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   ingestion-api-2:
     build:
@@ -53,6 +64,11 @@ services:
     environment:
       - NATS_URL=nats://nats:4222
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   ingestion-api-3:
     build:
@@ -63,6 +79,11 @@ services:
     environment:
       - NATS_URL=nats://nats:4222
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   # Processing Service instances (3 replicas)
   processing-svc-1:
@@ -76,6 +97,11 @@ services:
       - NATS_URL=nats://nats:4222
       - CLICKHOUSE_DSN=clickhouse://default:@clickhouse:9000/default
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   processing-svc-2:
     build:
@@ -88,6 +114,11 @@ services:
       - NATS_URL=nats://nats:4222
       - CLICKHOUSE_DSN=clickhouse://default:@clickhouse:9000/default
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   processing-svc-3:
     build:
@@ -100,6 +131,11 @@ services:
       - NATS_URL=nats://nats:4222
       - CLICKHOUSE_DSN=clickhouse://default:@clickhouse:9000/default
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   # Query API instances (3 replicas)
   query-api-1:
@@ -112,6 +148,11 @@ services:
       - CLICKHOUSE_DSN=clickhouse://default:@clickhouse:9000/default
       - NATS_URL=nats://nats:4222
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   query-api-2:
     build:
@@ -123,6 +164,11 @@ services:
       - CLICKHOUSE_DSN=clickhouse://default:@clickhouse:9000/default
       - NATS_URL=nats://nats:4222
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   query-api-3:
     build:
@@ -134,15 +180,23 @@ services:
       - CLICKHOUSE_DSN=clickhouse://default:@clickhouse:9000/default
       - NATS_URL=nats://nats:4222
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   # Frontend instance
   frontend:
     build:
       context: frontend
       dockerfile: Dockerfile.prod
-    ports:
-      - "3000:80"
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 volumes:
   clickhouse_data: 
